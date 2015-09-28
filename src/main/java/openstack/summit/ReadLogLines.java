@@ -5,8 +5,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -14,8 +12,10 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 
 public class ReadLogLines {
 	
-	public ReadLogLines() {
-		
+	String filePath = "";
+	
+	public ReadLogLines(String filePath) {
+		this.filePath = filePath;
 	}
 	
 	public void getLine(Map<String, Object> kafkaConfigs, final String topic) {
@@ -23,7 +23,7 @@ public class ReadLogLines {
 	    	BufferedReader br = null;
 			try {
 				String sCurrentLine;
-				br = new BufferedReader(new FileReader("sahara-all.logs"));
+				br = new BufferedReader(new FileReader(filePath));
 				while ((sCurrentLine = br.readLine()) != null) {
 					producer.send(new ProducerRecord<String, String>(topic, sCurrentLine));
 				}
@@ -48,7 +48,8 @@ public class ReadLogLines {
 	    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
 	    props.put(ProducerConfig.CLIENT_ID_CONFIG, "my-producer");
 	    
-	    new ReadLogLines().getLine(props, "logs");
+	    String path = "sahara-all-small.log";
+	    new ReadLogLines(path).getLine(props, "logs");
 	}
 
 }
